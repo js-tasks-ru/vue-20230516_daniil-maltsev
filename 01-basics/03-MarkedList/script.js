@@ -44,7 +44,7 @@ createApp({
       }, [])
     }
   },
-  template: `
+  template: ` 
   <div class="container">
     <div class="form-group">
       <input type="search" v-model="this.search" />
