@@ -6,8 +6,9 @@ export default defineComponent({
     count: {
       type: Number,
       default: 0
-    }
+    },
   },
+  emits: ['update:count'],
 
   // Компонент должен иметь входной параметр и порождать событие
 
