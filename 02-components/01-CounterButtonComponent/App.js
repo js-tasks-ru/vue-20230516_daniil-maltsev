@@ -16,7 +16,7 @@ export default defineComponent({
 
   template: `
     <div class="sample container">
-      <p>count = {{ count }}</p>
+      <p>count = {{ count }} </p>
       <p>
         <CounterButton :count="count" @update:count="count = $event" />
       </p>
