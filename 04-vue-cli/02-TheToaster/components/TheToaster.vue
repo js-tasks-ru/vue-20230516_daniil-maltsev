@@ -1,24 +1,71 @@
 <template>
   <div class="toasts">
-    <div class="toast toast_success">
-      <UiIcon class="toast__icon" icon="check-circle" />
-      <span>Success Toast Example</span>
+    <UiToastContainer>
+    <div :key="toast.id" v-for="toast in toasts" :class="toast.className" class="toast ">
+      <UiIcon class="toast__icon" :icon="toast.icon" />
+      <span>{{ toast.text }}</span>
     </div>
-
-    <div class="toast toast_error">
-      <UiIcon class="toast__icon" icon="alert-circle" />
-      <span>Error Toast Example</span>
-    </div>
-  </div>
+  </UiToastContainer>
+</div>
 </template>
 
 <script>
 import UiIcon from './UiIcon.vue';
+import UiToastContainer from './UiToastContainer.vue'
 
 export default {
   name: 'TheToaster',
+  props: {
+    delay: {
+      type: Number,
+      default: 5000
+    },
+    closeBtn: {
+      type: Boolean,
+      default: true
+    }
+  },
+  data(){
+    return{
+      toasts: []
+    }
+  },  
+  methods: {
+    success(text){
+      const newToast = {
+        id: 'success' + new Date(),
+        text,
+        className: 'toast_success',
+        icon: "check-circle"
+      }
 
-  components: { UiIcon },
+      this.toasts.push(newToast);
+      this.closeToastWithDelay(newToast.id)
+    },
+    error(text){
+      const newToast = {
+        id: 'error' + new Date(),
+        text,
+        className: 'toast_error',
+        icon: "alert-circle"
+      }
+
+      this.toasts.push(newToast);
+      this.closeToastWithDelay(newToast.id)
+    },
+
+    closeToastWithDelay(id){
+      setTimeout(()=> {
+        this.toasts = this.toasts.filter(el => el.id != id)
+      }, this.delay)
+    }
+  },
+
+
+
+  emits: ['handleSuccessClick', 'handleErrorClick'],
+
+  components: { UiIcon, UiToastContainer },
 };
 </script>
 
@@ -32,6 +79,17 @@ export default {
   justify-content: flex-end;
   white-space: pre-wrap;
   z-index: 999;
+}
+
+.toast__close {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	width: 15px;
+  height: 15px;
+	cursor: pointer;
+	border-radius: 50%;
+	background-color: var(--grey-2);
 }
 
 @media all and (min-width: 992px) {
