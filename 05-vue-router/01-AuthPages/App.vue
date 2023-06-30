@@ -11,7 +11,6 @@
 <script>
 import MeetupsHeader from './components/MeetupsHeader.vue';
 import MeetupsFooter from './components/MeetupsFooter.vue';
-import { router } from './router'
 
 export default {
   name: 'App',
@@ -20,8 +19,6 @@ export default {
     MeetupsFooter,
     MeetupsHeader,
   },
-
-  plugins: [router]
 };
 </script>
 
