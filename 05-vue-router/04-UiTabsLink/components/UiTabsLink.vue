@@ -1,5 +1,5 @@
 <template>
-  <router-link exactActiveClass exact-active-class="tabs__tab_active" class="tabs__tab " :to="to"><slot></slot></router-link>
+  <router-link exact-active-class="tabs__tab_active" class="tabs__tab " :to="to"><slot></slot></router-link>
 </template>
 
 <script>
