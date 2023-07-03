@@ -11,6 +11,7 @@ const router = createRouter({
     },
     {
       path: '/login',
+      name: 'login',
       meta: {
         requireGuest: true,
       },
@@ -39,5 +40,17 @@ const router = createRouter({
     },
   ],
 });
+
+
+router.beforeEach( async(to, from) => {
+  const loggedUser = await isAuthenticated();
+  if(to.meta.requireGuest && loggedUser){
+    return '/' 
+  } else if(to.meta.requireAuth && !loggedUser){
+    return { name: 'login', query: { from: to.path } };
+  } else {
+    return true
+  }
+})
 
 export { router };
