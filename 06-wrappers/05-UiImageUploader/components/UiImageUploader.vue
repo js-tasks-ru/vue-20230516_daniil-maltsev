@@ -1,15 +1,103 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
-      <span class="image-uploader__text">Загрузить изображение</span>
-      <input type="file" accept="image/*" class="image-uploader__input" />
+    <label class="image-uploader__preview" :class="{'image-uploader__preview-loading' : loadingClass}" :style="hasPreview">
+      <span class="image-uploader__text">{{ textValue }}</span>
+      <input @click="removeImage" @change="gettingFile" v-bind="$attrs" type="file" accept="image/*" class="image-uploader__input" />
     </label>
   </div>
 </template>
 
 <script>
+
+const placeholderImage = '/link.jpeg';
+
 export default {
   name: 'UiImageUploader',
+  inheritAttrs: false,
+  props: {
+    preview: URL,
+    uploader: Function
+  },
+  emits: ['select', 'upload', 'error', 'remove'],
+  data(){
+    return{
+     imageLink: null,
+     status: 'download'
+    }
+  },
+  methods: {
+    gettingFile(event){
+      const prevImage = this.imageLink;
+      const image = event.target.files[0]
+      this.imageLink = URL.createObjectURL(image);
+      this.$emit('select', image)
+
+      if(this.uploader){
+        this.uploadFile(image, prevImage)
+      } else {
+        this.defaultStatus;
+      } 
+      event.target.value = null
+    },
+
+    uploadFile(file, prevImage){
+      this.status = "loading";
+
+      this.uploader(file)
+      .then((result) => this.$emit("upload", result),
+      (error) => {
+        this.$emit('error', error);
+        this.imageLink = prevImage;
+      }
+      )
+      .finally(this.defaultStatus)
+    },
+
+    defaultStatus(){
+      if(this.imageLink === placeholderImage){
+        console.log('this.imageLink', this.imageLink)
+        console.log('placeholderImage', placeholderImage)
+        this.status = "download"
+      } else {
+        this.status = "remove"
+      }
+    },
+
+    removeImage($event){
+      if( this.status === "loading") {
+        $event.preventDefault();
+      } else {
+        this.imageLink = placeholderImage;
+        this.defaultStatus();
+        this.$emit('remove')
+      }
+    }
+  },
+  computed: {
+    hasPreview(){
+      return this.imageLink ? `--bg-url: url('${this.imageLink}')` : `--bg-url: url('/link.jpeg')`
+    },
+
+    textValue(){
+      if(this.imageLink == placeholderImage) {
+        return 'Загрузить изображение'
+      } else if(this.status === "loading"){
+        return "Загрузка..."
+      } else if(this.imageLink != placeholderImage){
+        return "Удалить изображение"
+      } else {
+        return "Удалить изображение"
+      }
+    },
+    loadingClass(){
+      return this.status === "loading";
+    }
+  },
+
+  created(){
+    this.imageLink = this.preview ? this.preview : placeholderImage;
+    this.defaultStatus();
+  }
 };
 </script>
 
