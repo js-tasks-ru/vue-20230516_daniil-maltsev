@@ -55,8 +55,6 @@ export default {
 
     defaultStatus(){
       if(this.imageLink === placeholderImage){
-        console.log('this.imageLink', this.imageLink)
-        console.log('placeholderImage', placeholderImage)
         this.status = "download"
       } else {
         this.status = "remove"
