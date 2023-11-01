@@ -83,8 +83,6 @@ export default {
         return 'Загрузить изображение'
       } else if(this.status === "loading"){
         return "Загрузка..."
-      } else if(this.imageLink != placeholderImage){
-        return "Удалить изображение"
       } else {
         return "Удалить изображение"
       }
