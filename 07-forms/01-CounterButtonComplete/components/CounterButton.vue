@@ -25,9 +25,7 @@ export default {
   },
   watch: {
     count(newCount){
-      if(this.state != newCount) {
-        this.state = newCount
-      }
+      this.state = newCount
     }
   }
 };

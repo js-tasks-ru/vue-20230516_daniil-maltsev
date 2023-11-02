@@ -9,8 +9,6 @@
 
 <script>
 
-const placeholderImage = '/link.jpeg';
-
 export default {
   name: 'UiImageUploader',
   inheritAttrs: false,
@@ -22,7 +20,8 @@ export default {
   data(){
     return{
      imageLink: null,
-     status: 'download'
+     status: null,
+     loading: false
     }
   },
   methods: {
@@ -35,7 +34,7 @@ export default {
       if(this.uploader){
         this.uploadFile(image, prevImage)
       } else {
-        this.defaultStatus;
+        this.status = "remove"
       } 
       event.target.value = null
     },
@@ -54,7 +53,7 @@ export default {
     },
 
     defaultStatus(){
-      if(this.imageLink === placeholderImage){
+      if(this.imageLink === null){
         this.status = "download"
       } else {
         this.status = "remove"
@@ -65,24 +64,25 @@ export default {
       if( this.status === "loading") {
         $event.preventDefault();
       } else {
-        this.imageLink = placeholderImage;
+        this.imageLink = null;
         this.defaultStatus();
         this.$emit('remove')
       }
     }
   },
+  
   computed: {
     hasPreview(){
-      return this.imageLink ? `--bg-url: url('${this.imageLink}')` : `--bg-url: url('/link.jpeg')`
+      return this.imageLink ? `--bg-url: url('${this.imageLink}')` : ''
     },
 
     textValue(){
-      if(this.imageLink == placeholderImage) {
-        return 'Загрузить изображение'
+      if(this.status === "remove") {
+        return 'Удалить изображение'
       } else if(this.status === "loading"){
         return "Загрузка..."
       } else {
-        return "Удалить изображение"
+        return "Загрузить изображение"
       }
     },
     loadingClass(){
@@ -91,7 +91,7 @@ export default {
   },
 
   created(){
-    this.imageLink = this.preview ? this.preview : placeholderImage;
+    this.imageLink = this.preview ? this.preview : null;
     this.defaultStatus();
   }
 };
