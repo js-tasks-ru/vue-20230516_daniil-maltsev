@@ -1,32 +1,31 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button @click="handleRemove" type="button" class="agenda-item-form__remove-button">
       <UiIcon icon="trash" />
     </button>
 
     <UiFormGroup>
-      <UiDropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <UiDropdown title="Тип" v-model="localAgendaItem.type" :options="$options.agendaItemTypeOptions" name="type" />
     </UiFormGroup>
-
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <UiFormGroup label="Начало">
-          <UiInput type="time" placeholder="00:00" name="startsAt" />
+          <UiInput type="time" placeholder="00:00" v-model="localAgendaItem.startsAt" name="startsAt" />
         </UiFormGroup>
       </div>
       <div class="agenda-item-form__col">
         <UiFormGroup label="Окончание">
-          <UiInput type="time" placeholder="00:00" name="endsAt" />
+          <UiInput type="time" placeholder="00:00" v-model="localAgendaItem.endsAt"  name="endsAt" />
         </UiFormGroup>
       </div>
     </div>
 
-    <UiFormGroup label="Заголовок">
-      <UiInput name="title" />
+    <UiFormGroup v-for="(field, name) in fieldsForm" :key="name"  :label="field.label">
+        <component v-model="localAgendaItem[name]" v-bind="field.props" :is="field.component" :name="name"></component>
     </UiFormGroup>
-    <UiFormGroup label="Описание">
-      <UiInput multiline name="description" />
-    </UiFormGroup>
+
+
+
   </fieldset>
 </template>
 
@@ -165,6 +164,47 @@ export default {
       required: true,
     },
   },
+
+  data() {
+    return {
+      localAgendaItem: { ...this.agendaItem },
+    };
+  },
+  
+  emits: ['remove', 'update:agendaItem'],
+
+  computed: {
+    fieldsForm(){
+      return agendaItemFormSchemas[this.localAgendaItem.type];
+    }
+  },
+
+  watch: {
+    localAgendaItem: {
+      deep: true,
+      handler(){
+        this.$emit('update:agendaItem', {...this.localAgendaItem})
+      }
+    },
+    'localAgendaItem.startsAt'(newStart, oldStart){
+      const diff = this.getTimeInMl(this.localAgendaItem.endsAt) - this.getTimeInMl(oldStart);
+
+      const newEndTime = this.getTimeInMl(newStart) + diff;
+
+      this.localAgendaItem.endsAt = new Date(newEndTime).toISOString().substring(11, 16)
+
+    }
+  },
+
+  methods: {
+    handleRemove(){
+      this.$emit('remove')
+    },
+    getTimeInMl(time){
+      const [hours, minutes] = time.split(':');
+      return (parseInt(hours, 10)*60 + parseInt(minutes, 10))*60*1000
+    }
+  }
 };
 </script>
 
